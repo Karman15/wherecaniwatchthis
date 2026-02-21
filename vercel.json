@@ -1,7 +1,4 @@
 {
-  "projectSettings": {
-    "python": "3.9"
-  },
   "buildCommand": "pip install -r requirements.txt",
   "outputDirectory": ".",
   "functions": {
