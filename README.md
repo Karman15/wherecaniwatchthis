@@ -2,9 +2,11 @@
 
 A full-stack web application to search for movies and TV shows on Netflix and discover their global availability with an interactive map visualization.
 
+**Now with serverless backend on Vercel!** Deploy your entire app in minutes.
+
 ![React](https://img.shields.io/badge/React-19.2-blue?logo=react)
-![Python](https://img.shields.io/badge/Python-3.8+-green?logo=python)
-![Flask](https://img.shields.io/badge/Flask-3.0-black?logo=flask)
+![Python](https://img.shields.io/badge/Python-3.9+-green?logo=python)
+![Vercel](https://img.shields.io/badge/Vercel-Serverless-black?logo=vercel)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
@@ -17,6 +19,16 @@ Where Can I Watch This? is a full-stack application that allows users to:
 - **Browse** detailed information including release year, type, and poster images
 
 Perfect for travelers, international viewers, and Netflix enthusiasts who want to find content availability across different regions.
+
+**Deployment:** Now fully compatible with Vercel - deploy with a single click!
+
+## 🚀 Quick Deploy
+
+Click the button below to deploy directly to Vercel:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/wherecaniwatchthis&env=TMDB_API_KEY)
+
+Or [follow the detailed deployment guide](./DEPLOYMENT_GUIDE.md)
 
 ## ✨ Features
 
@@ -203,29 +215,49 @@ npm run dev:all          # Run both frontend and backend
 
 # Production
 npm run build            # Build frontend for production
-npm run preview          # Preview production build
-
-# Code Quality
-npm run lint             # Run ESLint
-```
-
-## 🎓 Project Structure
-
-```
-wherecaniwatchthis/
+npm api/                        # Vercel serverless functions
+│   ├── search.py              # POST /api/search
+│   ├── health.py              # GET /api/health
+│   ├── netflix_finder.py      # Core search logic
+│   ├── countries.json         # Country mappings
+│   └── countries/
+│       └── [title_id]/
+│           └── [media_type].py # GET /api/countries/:id/:type
 ├── src/
-│   ├── api_server.py           # Flask API server
-│   ├── netflix_finder.py       # Core search logic
-│   ├── App.jsx                 # Main React component
-│   ├── main.jsx                # React entry point
-│   ├── countries.json          # Country mappings
+│   ├── App.jsx                # Main React component
+│   ├── main.jsx               # React entry point
 │   ├── components/
-│   │   └── WorldMap.jsx        # Map visualization
+│   │   └── WorldMap.jsx       # Map visualization
 │   ├── pages/
-│   │   ├── SearchPage.jsx      # Search interface
-│   │   ├── ResultsPage.jsx     # Results display
-│   │   └── DetailsPage.jsx     # Title details
+│   │   ├── SearchPage.jsx     # Search interface
+│   │   ├── ResultsPage.jsx    # Results display
+│   │   └── DetailsPage.jsx    # Title details
 │   ├── services/
+│   │   └── api.js             # API client
+│   └── theme/
+│       └── muiTheme.js        # Material-UI theme
+├── public/                    # Static assets
+├── package.json               # Node dependencies
+├── requirements.txt           # Python dependencies
+├── vite.config.js            # Vite configuration
+├── vercel.json               # Vercel serverless config
+├── DEPLOYMENT_GUIDE.md       # Deployment instructions
+└── index.html                # HTML entry point
+```
+
+## 📚 Architecture
+
+### Frontend
+- **React** with Vite for fast development
+- **Material-UI** for professional UI components
+- **Framer Motion** for smooth animations
+- **Responsive Design** - works on all devices
+
+### Backend (Serverless)
+- **Python** - Pure Python API functions
+- **Vercel Serverless Functions** - Auto-scaling, no server management
+- **TMDB API Integration** - Real-time Netflix availability data
+- **CORS Enabled** - Works with any frontend domain ├── services/
 │   │   └── api.js              # API client
 │   ├── theme/
 │   │   └── muiTheme.js         # Material-UI theme
@@ -243,25 +275,29 @@ wherecaniwatchthis/
 - Searches TMDB's extensive database of movies and TV shows
 - Returns relevant results with images and metadata
 - Handles typos and fuzzy matching
+404 Error on API Calls (After Deploying)
+- Make sure you've added `TMDB_API_KEY` to Vercel environment variables
+- Check that all files in `/api` folder are present
+- Verify your deploymentin Vercel dashboard
 
-### Country Availability Lookup
-- Queries Netflix's watch provider information from TMDB
-- Real-time data ensures accuracy
-- Supports 190+ countries
+### Search Returns No Results
+- **Without API key:** Only sample data is available (works offline)
+- **With API key:** Should work for any movie/TV show title
+- Check your TMDB API key is valid
+- Ensure environment variable is set in Vercel
 
-### Responsive UI
-- Mobile-first design approach
-- Adaptive layouts for all screen sizes
-- Touch-friendly interface
+### Images Not Loading
+- Check internet connection
+- Verify TMDB CDN is accessible (image.tmdb.org)
+- Try clearing browser cache
+- Check browser console for specific errors
 
-## 🔐 Security
+### API Health Check Fails
+- Visit `https://your-vercel-app.com/api/health`
+- Should return `{"status": "ok", "api_key_configured": true/false}`
+- If 404, check file structure in `/api` folder
 
-- Environment variables for sensitive data (API keys)
-- CORS properly configured for production
-- Input validation on all endpoints
-- No sensitive data stored client-side
-
-## 🐛 Troubleshooting
+For more help, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE
 
 ### Backend Not Connecting
 ```bash

@@ -1,0 +1,13 @@
+{
+  "projectSettings": {
+    "python": "3.9"
+  },
+  "buildCommand": "pip install -r requirements.txt",
+  "outputDirectory": ".",
+  "functions": {
+    "api/**/*.py": {
+      "memory": 1024,
+      "timeout": 30
+    }
+  }
+}

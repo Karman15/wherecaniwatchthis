@@ -9,6 +9,12 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl()
 
+// Add CORS headers helper function
+const getCorsHeaders = () => ({
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*'
+})
+
 export const searchTitles = async (query) => {
   if (!query.trim()) {
     throw new Error('Please enter a title')
