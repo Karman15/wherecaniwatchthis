@@ -11,7 +11,7 @@ import {
 const geoUrl =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-const WorldMap = ({ availableCountries }) => {
+const WorldMap = ({ availableCountries, highlightColor = "#E50914" }) => {
   const [selectedCountries, setSelectedCountries] = useState(new Set());
   const [hoveredCountry, setHoveredCountry] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
@@ -33,7 +33,7 @@ const WorldMap = ({ availableCountries }) => {
       sx={{
         width: "100%",
         height: 600,
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#1a1a1a",
         borderRadius: 2,
         overflow: "hidden",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
@@ -87,7 +87,7 @@ const WorldMap = ({ availableCountries }) => {
                   }}
                   style={{
                     default: {
-                      fill: isAvailable ? "#E50914" : "#E8E8E8",
+                      fill: isAvailable ? highlightColor : "#2d2d2d",
                       stroke: "#FFFFFF",
                       strokeWidth: 0.75,
                       outline: "none",
@@ -95,7 +95,8 @@ const WorldMap = ({ availableCountries }) => {
                       cursor: "pointer",
                     },
                     hover: {
-                      fill: isAvailable ? "#B80710" : "#D0D0D0",
+                      fill: isAvailable ? highlightColor : "#3a3a3a",
+                      opacity: isAvailable ? 0.8 : 1,
                       stroke: "#FFFFFF",
                       strokeWidth: 0.75,
                       outline: "none",
@@ -103,7 +104,7 @@ const WorldMap = ({ availableCountries }) => {
                       transition: "all 0.3s ease",
                     },
                     pressed: {
-                      fill: "#E50914",
+                      fill: highlightColor,
                       stroke: "#FFFFFF",
                       strokeWidth: 0.75,
                       outline: "none",
@@ -153,7 +154,7 @@ const WorldMap = ({ availableCountries }) => {
           color: "primary.main",
           zIndex: 20,
           "&:hover": {
-            backgroundColor: "#f5f5f5",
+            backgroundColor: "#1a1a1a",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
           },
         }}

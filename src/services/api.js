@@ -43,16 +43,35 @@ export const searchTitles = async (query) => {
 
 export const fetchCountriesForTitle = async (titleId, titleType) => {
   const response = await fetch(`${API_BASE_URL}/countries/${titleId}/${titleType}`)
-
   const data = await response.json()
-
-  if (!data.success) {
-    throw new Error('Could not fetch availability data')
-  }
-
-  if (data.data.length === 0) {
-    throw new Error('No Netflix availability found for this title')
-  }
-
+  if (!data.success) throw new Error('Could not fetch availability data')
+  if (data.data.length === 0) throw new Error('No Netflix availability found for this title')
   return data.data
+}
+
+export const fetchTrending = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/trending`)
+    const data = await response.json()
+    return data.success ? data.data : []
+  } catch {
+    return []
+  }
+}
+
+export const fetchProviders = async (titleId, titleType) => {
+  const response = await fetch(`${API_BASE_URL}/providers/${titleId}/${titleType}`)
+  const data = await response.json()
+  if (!data.success) return {}
+  return data.data
+}
+
+export const fetchTitleDetails = async (titleId, titleType) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/details/${titleId}/${titleType}`)
+    const data = await response.json()
+    return data.success ? data.data : {}
+  } catch {
+    return {}
+  }
 }

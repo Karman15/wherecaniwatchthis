@@ -2,6 +2,7 @@ import { createTheme } from '@mui/material/styles'
 
 const muiTheme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
       main: '#e50914',
       light: '#ff4444',
@@ -13,11 +14,7 @@ const muiTheme = createTheme({
     },
     background: {
       default: '#0f0f0f',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#1a1a1a',
-      secondary: '#666666',
+      paper: '#1a1a1a',
     },
     error: {
       main: '#e50914',
@@ -104,12 +101,12 @@ const muiTheme = createTheme({
         },
         outlined: {
           '&:hover': {
-            backgroundColor: 'rgba(229, 9, 20, 0.08)',
+            backgroundColor: 'rgba(229, 9, 20, 0.12)',
           },
         },
         text: {
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
           },
         },
       },
@@ -120,11 +117,10 @@ const muiTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          backgroundColor: '#ffffff',
           '&:hover': {
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
           },
         },
       },
@@ -148,13 +144,12 @@ const muiTheme = createTheme({
           '& .MuiOutlinedInput-root': {
             borderRadius: '8px',
             transition: 'all 0.3s ease',
-            backgroundColor: '#ffffff',
             '&:hover fieldset': {
               borderColor: '#e50914',
             },
             '&.Mui-focused fieldset': {
               borderColor: '#e50914',
-              boxShadow: '0 0 0 3px rgba(229, 9, 20, 0.1)',
+              boxShadow: '0 0 0 3px rgba(229, 9, 20, 0.15)',
             },
           },
           '& .MuiOutlinedInput-input': {
@@ -167,20 +162,7 @@ const muiTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          backgroundColor: '#f5f5f5',
-        },
-        standardInfo: {
-          backgroundColor: '#e3f2fd',
-          color: '#1565c0',
-        },
-        standardWarning: {
-          backgroundColor: '#fff3e0',
-          color: '#e65100',
-        },
-        standardError: {
-          backgroundColor: '#ffebee',
-          color: '#c62828',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
         },
       },
     },
@@ -188,7 +170,6 @@ const muiTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: '#ffffff',
         },
       },
     },

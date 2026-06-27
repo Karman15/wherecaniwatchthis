@@ -1,5 +1,8 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -8,15 +11,16 @@ import {
   Chip,
   Container,
   Grid,
+  IconButton,
   Rating,
   Skeleton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
 
-const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch }) => {
-  // Filter results to only show titles with posters, then sort by rating
+const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch, onOpenWatchlist, watchlistCount, toggleWatchlist, isInWatchlist }) => {
   const filteredResults = results.filter((result) => result.poster);
   const sortedResults = [...filteredResults].sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
@@ -24,21 +28,10 @@ const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch }) => {
     return (
       <Box sx={{ minHeight: "100vh", py: 4 }}>
         <Container maxWidth="lg">
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={onBackToSearch}
-            variant="text"
-            sx={{
-              mb: 3,
-              textTransform: "none",
-              fontSize: "1em",
-            }}
-          >
+          <Button startIcon={<ArrowBackIcon />} onClick={onBackToSearch} variant="text" sx={{ mb: 3, textTransform: "none", fontSize: "1em" }}>
             Back to Search
           </Button>
-          <Typography variant="h4" sx={{ mb: 4, fontWeight: 700 }}>
-            Searching for titles...
-          </Typography>
+          <Typography variant="h4" sx={{ mb: 4, fontWeight: 700 }}>Searching for titles...</Typography>
           <Grid container spacing={3}>
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Grid item xs={12} sm={6} md={3} lg={2.4} key={i}>
@@ -60,32 +53,36 @@ const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch }) => {
   return (
     <Box sx={{ minHeight: "100vh", py: 4 }}>
       <Container maxWidth="lg">
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={onBackToSearch}
-          variant="text"
-          sx={{
-            mb: 3,
-            textTransform: "none",
-            fontSize: "1em",
-            color: "primary.main",
-            "&:hover": {
-              backgroundColor: "rgba(229, 9, 20, 0.08)",
-            },
-          }}
-        >
-          Back to Search
-        </Button>
+        {/* Top bar */}
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3, flexWrap: "wrap", gap: 2 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={onBackToSearch}
+            variant="text"
+            sx={{ textTransform: "none", fontSize: "1em", color: "primary.main", "&:hover": { backgroundColor: "rgba(229, 9, 20, 0.08)" } }}
+          >
+            Back to Search
+          </Button>
+          <Tooltip title="My Watchlist">
+            <IconButton
+              onClick={onOpenWatchlist}
+              sx={{ color: "primary.main", backgroundColor: "rgba(229, 9, 20, 0.08)", "&:hover": { backgroundColor: "rgba(229, 9, 20, 0.15)" } }}
+            >
+              <Badge badgeContent={watchlistCount} color="primary">
+                <BookmarkIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+        </Box>
+
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-            Search Results
-          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>Search Results</Typography>
           <Typography variant="body1" sx={{ color: "text.secondary" }}>
-            Found <strong>{sortedResults.length}</strong> title{sortedResults.length !== 1 ? "s" : ""} with posters
+            Found <strong>{sortedResults.length}</strong> title{sortedResults.length !== 1 ? "s" : ""}
           </Typography>
         </Box>
 
-        <Grid container spacing={3} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)', lg: 'repeat(5, 1fr)' } }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(4, 1fr)", lg: "repeat(5, 1fr)" }, gap: 2.5 }}>
           {sortedResults.map((result, index) => (
             <Box
               key={`${result.id}-${result.type}`}
@@ -93,7 +90,6 @@ const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05, duration: 0.3 }}
-              sx={{ p: 1.5 }}
             >
               <Card
                 component={motion.div}
@@ -108,38 +104,44 @@ const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch }) => {
                   overflow: "hidden",
                   "&:hover": {
                     boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
-                    "& .card-image": {
-                      transform: "scale(1.05)",
-                    },
+                    "& .card-image": { transform: "scale(1.05)" },
                   },
                 }}
               >
-                {/* Image Section */}
-                <Box
-                  className="card-image"
-                  sx={{
-                    width: "100%",
-                    aspectRatio: "2 / 3",
-                    overflow: "hidden",
-                    backgroundColor: "#f5f5f5",
-                    transition: "transform 0.3s ease",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={result.poster}
-                    alt={result.title}
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
+                {/* Image */}
+                <Box sx={{ position: "relative" }}>
+                  <Box
+                    className="card-image"
+                    sx={{ width: "100%", aspectRatio: "2/3", overflow: "hidden", backgroundColor: "#2a2a2a", transition: "transform 0.3s ease" }}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={result.poster}
+                      alt={result.title}
+                      sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  </Box>
+                  {/* Watchlist button overlay */}
+                  <Tooltip title={isInWatchlist(result) ? "Remove from Watchlist" : "Add to Watchlist"}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => { e.stopPropagation(); toggleWatchlist(result); }}
+                      sx={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        backgroundColor: "rgba(0,0,0,0.65)",
+                        color: isInWatchlist(result) ? "primary.main" : "white",
+                        "&:hover": { backgroundColor: "rgba(0,0,0,0.85)" },
+                      }}
+                    >
+                      {isInWatchlist(result) ? <BookmarkIcon fontSize="small" /> : <BookmarkBorderIcon fontSize="small" />}
+                    </IconButton>
+                  </Tooltip>
                 </Box>
 
-                {/* Content Section */}
+                {/* Content */}
                 <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
-                  {/* Title */}
                   <Typography
                     variant="subtitle1"
                     sx={{
@@ -154,41 +156,17 @@ const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch }) => {
                   >
                     {result.title}
                   </Typography>
-
-                  {/* Meta Info */}
                   <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 0.5 }}>
-                    <Chip
-                      label={result.type.toUpperCase()}
-                      size="small"
-                      color="primary"
-                      variant="filled"
-                      sx={{ fontWeight: 600, height: 24 }}
-                    />
+                    <Chip label={result.type.toUpperCase()} size="small" color="primary" variant="filled" sx={{ fontWeight: 600, height: 24 }} />
                     {result.year && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          color: "text.secondary",
-                          fontWeight: 500,
-                        }}
-                      >
+                      <Typography variant="caption" sx={{ display: "flex", alignItems: "center", color: "text.secondary", fontWeight: 500 }}>
                         {result.year}
                       </Typography>
                     )}
                   </Stack>
-
-                  {/* Rating */}
                   {result.rating > 0 && (
                     <Box sx={{ mt: "auto" }}>
-                      <Rating
-                        value={result.rating / 2}
-                        readOnly
-                        size="small"
-                        precision={0.5}
-                        sx={{ fontSize: "1rem" }}
-                      />
+                      <Rating value={result.rating / 2} readOnly size="small" precision={0.5} sx={{ fontSize: "1rem" }} />
                       <Typography variant="caption" sx={{ color: "text.secondary", ml: 0.5 }}>
                         {result.rating.toFixed(1)}/10
                       </Typography>
@@ -198,12 +176,12 @@ const ResultsPage = ({ results, loading, onSelectTitle, onBackToSearch }) => {
               </Card>
             </Box>
           ))}
-        </Grid>
+        </Box>
 
         {sortedResults.length === 0 && (
           <Box sx={{ textAlign: "center", py: 8 }}>
             <Typography variant="h6" sx={{ color: "text.secondary" }}>
-              No titles with images found. Try searching for something else.
+              No titles found. Try searching for something else.
             </Typography>
           </Box>
         )}

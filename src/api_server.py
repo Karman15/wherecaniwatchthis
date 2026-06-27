@@ -103,6 +103,37 @@ def get_netflix_countries(title_id, media_type):
         )
 
 
+@app.route("/api/trending", methods=["GET"])
+def get_trending():
+    try:
+        result = finder.get_trending()
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "data": [], "message": str(e)}), 500
+
+
+@app.route("/api/providers/<int:title_id>/<media_type>", methods=["GET"])
+def get_providers(title_id, media_type):
+    try:
+        if media_type not in ["movie", "tv"]:
+            return jsonify({"success": False, "message": "Invalid media_type"}), 400
+        result = finder.get_all_providers(title_id, media_type)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "data": {}, "message": str(e)}), 500
+
+
+@app.route("/api/details/<int:title_id>/<media_type>", methods=["GET"])
+def get_title_details(title_id, media_type):
+    try:
+        if media_type not in ["movie", "tv"]:
+            return jsonify({"success": False, "message": "Invalid media_type"}), 400
+        result = finder.get_title_details(title_id, media_type)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "data": {}, "message": str(e)}), 500
+
+
 @app.route("/api/health", methods=["GET"])
 def health_check():
     """
