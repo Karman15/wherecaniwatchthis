@@ -14,6 +14,20 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+MAJOR_PROVIDERS = {
+    8: "Netflix",
+    9: "Amazon Prime Video",
+    119: "Amazon Prime Video",
+    337: "Disney+",
+    15: "Hulu",
+    1899: "Max",
+    384: "Max",
+    350: "Apple TV+",
+    386: "Peacock",
+    531: "Paramount+",
+    283: "Crunchyroll",
+}
+
 
 class NetflixTitleFinder:
     def __init__(self):
@@ -343,6 +357,104 @@ class NetflixTitleFinder:
         except Exception as e:
             print(f"Warning: Could not fetch provider data ({e})")
             return {"success": False, "data": []}
+
+
+    def get_trending(self) -> Dict:
+        if not self.api_key:
+            return {"success": True, "data": []}
+        try:
+            url = f"{self.tmdb_base_url}/trending/all/week"
+            params = {"api_key": self.api_key, "language": "en-US"}
+            response = requests.get(url, params=params, timeout=10)
+            if response.status_code != 200:
+                return {"success": False, "data": []}
+            results = response.json().get("results", [])
+            formatted = []
+            for r in results:
+                if r.get("media_type") not in ["movie", "tv"]:
+                    continue
+                poster = self._get_poster_url(r.get("poster_path"))
+                if not poster:
+                    continue
+                title = r.get("title") or r.get("name", "Unknown")
+                year = (r.get("release_date") or r.get("first_air_date") or "")[:4]
+                formatted.append({
+                    "id": r.get("id"),
+                    "title": title,
+                    "type": r.get("media_type"),
+                    "year": year,
+                    "poster": poster,
+                    "rating": r.get("vote_average", 0),
+                })
+            return {"success": True, "data": formatted}
+        except Exception:
+            return {"success": False, "data": []}
+
+    def get_all_providers(self, title_id: int, media_type: str) -> Dict:
+        if not self.api_key:
+            return {"success": True, "data": {}}
+        try:
+            url = f"{self.tmdb_base_url}/{media_type}/{title_id}/watch/providers"
+            params = {"api_key": self.api_key}
+            response = requests.get(url, params=params, timeout=10)
+            if response.status_code != 200:
+                return {"success": False, "data": {}}
+            data = response.json().get("results", {})
+            providers_map: Dict[str, Dict] = {}
+            for country_code, provider_data in data.items():
+                country_name = self._code_to_country_name(country_code)
+                for provider in provider_data.get("flatrate", []):
+                    pid = provider.get("provider_id")
+                    pname = MAJOR_PROVIDERS.get(pid)
+                    if not pname:
+                        continue
+                    if pname not in providers_map:
+                        logo_path = provider.get("logo_path", "")
+                        providers_map[pname] = {
+                            "countries": [],
+                            "logo": f"https://image.tmdb.org/t/p/original{logo_path}" if logo_path else None,
+                        }
+                    if country_name not in providers_map[pname]["countries"]:
+                        providers_map[pname]["countries"].append(country_name)
+            for p in providers_map.values():
+                p["countries"] = sorted(p["countries"])
+            return {"success": True, "data": providers_map}
+        except Exception:
+            return {"success": False, "data": {}}
+
+    def get_title_details(self, title_id: int, media_type: str) -> Dict:
+        if not self.api_key:
+            return {"success": True, "data": {}}
+        try:
+            url = f"{self.tmdb_base_url}/{media_type}/{title_id}"
+            params = {"api_key": self.api_key, "append_to_response": "credits"}
+            response = requests.get(url, params=params, timeout=10)
+            if response.status_code != 200:
+                return {"success": False, "data": {}}
+            d = response.json()
+            genres = [g["name"] for g in d.get("genres", [])]
+            cast = [
+                {
+                    "name": c["name"],
+                    "character": c.get("character", ""),
+                    "photo": f"https://image.tmdb.org/t/p/w185{c['profile_path']}" if c.get("profile_path") else None,
+                }
+                for c in d.get("credits", {}).get("cast", [])[:8]
+            ]
+            episode_run = d.get("episode_run_time", [])
+            runtime = d.get("runtime") or (episode_run[0] if episode_run else None)
+            return {
+                "success": True,
+                "data": {
+                    "overview": d.get("overview", ""),
+                    "tagline": d.get("tagline", ""),
+                    "genres": genres,
+                    "cast": cast,
+                    "runtime": runtime,
+                },
+            }
+        except Exception:
+            return {"success": False, "data": {}}
 
 
 # API Usage Example:
